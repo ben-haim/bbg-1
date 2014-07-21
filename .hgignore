@@ -1,0 +1,8 @@
+syntax: glob
+*~
+*.pyc
+*.pyo
+*.bak
+*.spyderproject
+env/
+.idea/
