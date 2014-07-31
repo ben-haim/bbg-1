@@ -25,7 +25,7 @@ FLDS = bc.FLDS
 OVDS = bc.OVDS
 
 TODAY = dt.date.today()
-LAST_MONTH = dt.date(TODAY.year, TODAY.month - 1, TODAY.day)
+LAST_MONTH = TODAY - dt.timedelta(30)
 
 OvdNamedTuple = namedtuple('override', 'fieldId, value')
 
@@ -213,6 +213,7 @@ def get_sensitivity_bbg(identifier,
         ovds.update(scen)
         reqs[i] = {IDS: sec_id, FLDS: flds, OVDS: ovds}
     results = get_multidata_bbg(reqs)
+#    results = multi_thrd(reqs)
     # rtn_arr = []
     rtn_df = []
     for x in xrange(len(scens)):

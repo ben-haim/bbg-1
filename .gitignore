@@ -39,6 +39,7 @@ htmlcov
 .project
 .pydevproject
 .spyderproject
+.spyderworkspace
 
 # Complexity
 output/*.html

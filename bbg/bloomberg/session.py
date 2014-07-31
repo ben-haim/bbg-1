@@ -56,7 +56,7 @@ class Session(bb.Session):
         if handler is None:
             handler = br.processEvent
         self.event_handler = handler
-        self.dispatcher = bb.EventDispatcher(10)
+        self.dispatcher = bb.EventDispatcher(4)
         super(Session, self).__init__(SESSION_OPTIONS,
               self.event_handler, self.dispatcher)
         self.dispatcher.start()

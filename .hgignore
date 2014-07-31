@@ -4,6 +4,7 @@ syntax: glob
 *.pyo
 *.bak
 *.spyderproject
+*.spyderworkspace
 env/
 <<<<<<< HEAD
 .idea/
