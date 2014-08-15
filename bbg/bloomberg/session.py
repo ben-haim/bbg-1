@@ -13,6 +13,7 @@ from bbg.utils.decorators import ignored
 from optparse import OptionParser
 from collections import defaultdict
 from Queue import Queue
+import multiprocessing
 
 def _parse_cmd_line():
     """adds options to the command line option parser"""
@@ -45,6 +46,25 @@ class _SessionOptions(bb.SessionOptions):
 
 SESSION_OPTIONS = _SessionOptions()
 
+
+# class MultiProcessSession(multiprocessing.Process):
+#     def __init__(self):
+#         multiprocessing.Process.__init__(self)
+#         self.session = None
+#         # self.start()
+#
+#     def run(self):
+#         self.session = Session()
+#
+#     # def __enter__(self):
+#     #     """pass"""
+#     #     return self
+#     #
+#     # def __exit__(self, exc_type, exc_val, exc_tb):
+#     #     self.session.__exit__(self.session, exc_type, exc_val, exc_tb)
+#     #     super(MultiProcessSession, self).terminate()
+
+
 class Session(bb.Session):
     """sub-class adding functionality to blpapi.Session. Automatically
     starts an asynchronous session with an event handler and dispatcher.
@@ -58,7 +78,8 @@ class Session(bb.Session):
         self.event_handler = handler
         self.dispatcher = bb.EventDispatcher(4)
         super(Session, self).__init__(SESSION_OPTIONS,
-              self.event_handler, self.dispatcher)
+                                      self.event_handler,
+                                      self.dispatcher)
         self.dispatcher.start()
         self.started = False
         self.queue = Queue()
@@ -75,6 +96,16 @@ class Session(bb.Session):
             self.queue.join()
         except be.SessionError as err:
             print err
+
+#     def run(self):
+#         while True:
+#             correlation_id, req = self.queue.get()
+#         try:
+# #            print 'Sending to bloomberg...', req
+#             self.sendRequest(req, correlationId=correlation_id)
+#         except Exception as err:
+#             print err
+
 
     def getService(self, service_name):
         """overrides the bb function to open/get service in one step"""
@@ -110,12 +141,16 @@ class Session(bb.Session):
                     self.unsubscribe(self.subscription_list)
             #Tried manually stopping the event dispatcher, it slowed
             #functionality significantly
+            self.dispatcher = None
+            self.event_handler = None
+            # self = None
             if self.event_handler is None:
                 with ignored(Exception):
                     self.stop()
             else:
                 with ignored(Exception):
                     self.stopAsync()
+            self = None
         finally:
             pass
 
@@ -131,5 +166,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
+
     except KeyboardInterrupt:
         print "Ctrl+C pressed. Stopping..."

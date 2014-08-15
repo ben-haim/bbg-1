@@ -6,8 +6,8 @@ Created on Wed Jul 02 11:33:42 2014
 """
 
 from nose.tools import *
-import bbg.bloomberg.date as bdt
-from bbg.bloomberg.date import BbgDate, BbgDateTime, BbgTime
+import bbg.utils.date as bdt
+from bbg.utils.date import BbgDate, BbgDateTime, BbgTime
 import datetime as dt
 
 date_tup = (2014, 6, 15)

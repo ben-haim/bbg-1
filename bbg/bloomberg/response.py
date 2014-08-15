@@ -9,6 +9,7 @@ import bbg.globals.constants as bc
 import bbg.globals.exceptions as be
 import bbg.globals.names as bn
 from bbg.utils.misc import format_fld_name
+from bbg.utils.decorators import coroutine
 
 import pandas as pd
 from blpapi.event import Event
@@ -18,8 +19,19 @@ from collections import defaultdict, namedtuple
 def processEvent(event, session):
     """Acts as event handler for asynchronous bloomberg requests"""
     event_type = event.eventType()
-    FUNC_EVENT[event_type](event, session)
-#    _proc_print_basic(event, session)
+    func = _proc_event(event_type)
+    func.send((event, session))
+
+    # FUNC_EVENT[event_type](event, session)
+    #_proc_print_basic(event, session)
+
+
+@coroutine
+def _proc_event(event_type):
+    func = FUNC_EVENT[event_type]
+    while True:
+        event, session = yield
+        func(event, session)
 
 
 def _proc_event_admin(event, session):
